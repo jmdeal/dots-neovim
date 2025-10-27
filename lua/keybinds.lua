@@ -19,10 +19,13 @@ map('', '<left>', '<nop>', { noremap = true })
 map('', '<right>', '<nop>', { noremap = true })
 
 -- split navigation
-map('n', '<C-h>', '<C-W>h', default_opts)
-map('n', '<C-j>', '<C-W>j', default_opts)
-map('n', '<C-k>', '<C-W>k', default_opts)
-map('n', '<C-l>', '<C-W>l', default_opts)
+-- map('n', '<C-h>', '<C-W>h', default_opts)
+-- map('n', '<C-j>', '<C-W>j', default_opts)
+-- map('n', '<C-k>', '<C-W>k', default_opts)
+-- map('n', '<C-l>', '<C-W>l', default_opts)
+
+-- create splits
+map('n', '<leader>sv', ':vsplit<CR>', default_opts)
 
 -- close all windows and exit from neovim
 map('n', '<leader>q', ':qa!<CR>', default_opts)
@@ -48,7 +51,7 @@ map('n', '<F3>', ':TroubleToggle<CR>', default_opts)
 
 -- diffview
 -- TODO: Remap to function key and figure out how to effectively close
-map('n', '<leader>dv', ':DiffviewOpen<CR>', default_opts)
+-- map('n', '<leader>dv', ':DiffviewOpen<CR>', default_opts)
 
 -- vista
 map('n', '<F4>', ':Vista!!<CR>', default_opts)

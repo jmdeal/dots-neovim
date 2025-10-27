@@ -13,3 +13,5 @@ require('plugins.lsp')
 require('plugins.harpoon')
 require('plugins.yaml')
 
+
+vim.cmd.colorscheme('monokai-pro')

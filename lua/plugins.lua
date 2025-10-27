@@ -14,6 +14,109 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
     'tpope/vim-fugitive',
+    'tpope/vim-rhubarb',
+    'tpope/vim-surround',
+    'towolf/vim-helm',
+
+    {
+        'mfussenegger/nvim-dap',
+        dependencies = {
+            'leoluz/nvim-dap-go',
+            'rcarriga/nvim-dap-ui',
+            'nvim-neotest/nvim-nio',
+        },
+        config = function()
+            local dap = require 'dap'
+            local ui = require 'dapui'
+
+            ui.setup()
+            require('dap-go').setup()
+
+            -- TODO: determine why leader is still resolved as \ here
+            vim.keymap.set('n', '<space>db', dap.toggle_breakpoint, {
+                desc = '[D]ebug [B]reakpoint',
+            })
+            vim.keymap.set('n', '<space>dg', dap.run_to_cursor, {
+                desc = '[D]ebug [G]oto Cursor',
+            })
+            vim.keymap.set('n', '<F1>', dap.continue, {
+                desc = 'Debug Continue',
+            })
+            vim.keymap.set('n', '<F2>', dap.step_over, {
+                desc = 'Debug Step Over',
+            })
+            vim.keymap.set('n', '<F3>', dap.step_into, {
+                desc = 'Debug Step Into',
+            })
+            vim.keymap.set('n', '<F4>', dap.step_out, {
+                desc = 'Debug Step Out',
+            })
+            vim.keymap.set('n', '<F9>', dap.restart, {
+                desc = 'Debug Restart',
+            })
+            vim.keymap.set('n', '<F10>', dap.stop, {
+                desc = 'Debug Stop',
+            })
+            vim.keymap.set('n', '<F12>', dap.disconnect, {
+                desc = 'Debug Disconnect'
+            })
+
+            vim.keymap.set('n', '<space>dk', function()
+                require('dapui').eval(nil, { enter = true })
+            end, {
+                desc = '[D]ebug Hover'
+            })
+            vim.keymap.set('n', '<space>dv', function()
+                local widgets = require('dap.ui.widgets')
+                widgets.centered_float(widgets.scopes, { border = 'rounded' })
+            end, {
+                desc = '[D]ebug [V]ariables'
+            })
+
+            -- -- Configure the UI to open and close automatically
+            -- dap.listeners.before.attach.dapui_config = function()
+            --     ui.open()
+            -- end
+            -- dap.listeners.before.launch.dapui_config = function()
+            --     ui.open()
+            -- end
+            -- dap.listeners.before.event_terminated.dapui_config = function()
+            --     ui.close()
+            -- end
+            -- dap.listeners.before.event_exited.dapui_config = function()
+            --     ui.close()
+            -- end
+        end
+    },
+
+    {
+        'mrjones2014/smart-splits.nvim',
+        lazy = false,
+        config = function()
+            require('smart-splits').setup({
+                disable_multiplexer_nav_when_zoomed = false,
+            })
+            -- recommended mappings
+            -- resizing splits
+            -- these keymaps will also accept a range,
+            -- for example `10<A-h>` will `resize_left` by `(10 * config.default_amount)`
+            vim.keymap.set('n', '<A-h>', require('smart-splits').resize_left)
+            vim.keymap.set('n', '<A-j>', require('smart-splits').resize_down)
+            vim.keymap.set('n', '<A-k>', require('smart-splits').resize_up)
+            vim.keymap.set('n', '<A-l>', require('smart-splits').resize_right)
+            -- moving between splits
+            vim.keymap.set('n', '<C-h>', require('smart-splits').move_cursor_left)
+            vim.keymap.set('n', '<C-j>', require('smart-splits').move_cursor_down)
+            vim.keymap.set('n', '<C-k>', require('smart-splits').move_cursor_up)
+            vim.keymap.set('n', '<C-l>', require('smart-splits').move_cursor_right)
+            vim.keymap.set('n', '<C-\\>', require('smart-splits').move_cursor_previous)
+            -- swapping buffers between windows
+            vim.keymap.set('n', '<leader><leader>h', require('smart-splits').swap_buf_left)
+            vim.keymap.set('n', '<leader><leader>j', require('smart-splits').swap_buf_down)
+            vim.keymap.set('n', '<leader><leader>k', require('smart-splits').swap_buf_up)
+            vim.keymap.set('n', '<leader><leader>l', require('smart-splits').swap_buf_right)
+        end
+    },
 
     -- TODO: Themes
     'shaunsingh/nord.nvim',
@@ -23,6 +126,20 @@ require("lazy").setup({
         priority = 1000,
         config = function()
             vim.cmd.colorscheme('monokai-pro')
+            require("monokai-pro").setup({
+                transparent_background = true,
+                background_clear = {
+                    -- "float_win",
+                    "toggleterm",
+                    "telescope",
+                    -- "which-key",
+                    "renamer",
+                    "notify",
+                    -- "nvim-tree",
+                    -- "neo-tree",
+                    "bufferline", -- better used if background of `neo-tree` or `nvim-tree` is cleared
+                },
+            })
         end
     },
     {
@@ -38,11 +155,18 @@ require("lazy").setup({
     {
         'neovim/nvim-lspconfig',
         dependencies = {
-            { 'williamboman/mason.nvim', config = true },
-            'williamboman/mason-lspconfig.nvim',
-
+            {
+                'williamboman/mason.nvim',
+                config = true,
+                -- Pinned to v1.11.0 because setup_handlers was removed in v2.0.0, breaking config
+                version = 'v1.11.0',
+            },
+            {
+                'williamboman/mason-lspconfig.nvim',
+                version = 'v1.11.0',
+            },
             -- Some useful LSP status updates
-            { 'j-hui/fidget.nvim', tag = 'legacy', opts = {}},
+            { 'j-hui/fidget.nvim',       tag = 'legacy', opts = {} },
 
             'folke/neodev.nvim',
 
@@ -75,9 +199,12 @@ require("lazy").setup({
             },
             -- TODO: move keybinds to keybind file
             on_attach = function(bufnr)
-                vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
-                vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
-                vim.keymap.set('n', '<leader>ph', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[P]review [H]unk' })
+                vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk,
+                    { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
+                vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk,
+                    { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
+                vim.keymap.set('n', '<leader>ph', require('gitsigns').preview_hunk,
+                    { buffer = bufnr, desc = '[P]review [H]unk' })
             end,
         },
     },
@@ -99,7 +226,7 @@ require("lazy").setup({
         },
     },
 
-    { 'numToStr/Comment.nvim', opts = {} },
+    { 'numToStr/Comment.nvim',     opts = {} },
 
     -- Telescope
     {
@@ -157,14 +284,14 @@ require("lazy").setup({
     },
     {
         'ggandor/leap.nvim',
-	enabled = true,
+        enabled = true,
         dependencies = {
             'tpope/vim-repeat',
         },
         keys = {
-            { 's', mode = {'n', 'x', 'o'}, desc = 'Leap forward to' },
-            { 'S', mode = {'n', 'x', 'o'}, desc = 'Leap backward to' },
-            { 'gs', mode = {'n', 'x', 'o'}, desc = 'Leap from windows' },
+            { 's',  mode = { 'n', 'x', 'o' }, desc = 'Leap forward to' },
+            { 'S',  mode = { 'n', 'x', 'o' }, desc = 'Leap backward to' },
+            { 'gs', mode = { 'n', 'x', 'o' }, desc = 'Leap from windows' },
         },
         config = function(_, opts)
             local leap = require('leap')
@@ -172,9 +299,27 @@ require("lazy").setup({
                 leap.opts[k] = v
             end
             leap.add_default_mappings(true)
-            vim.keymap.del({'x', 'o'}, 'x')
-            vim.keymap.del({'x', 'o'}, 'X')
+            vim.keymap.del({ 'x', 'o' }, 'x')
+            vim.keymap.del({ 'x', 'o' }, 'X')
         end,
     },
-}, {})
 
+    -- Seamless tmux navigation
+    -- {
+    --     'christoomey/vim-tmux-navigator',
+    --     cmd = {
+    --         'TmuxNavigateLeft',
+    --         'TmuxNavigateDown',
+    --         'TmuxNavigateUp',
+    --         'TmuxNavigateRight',
+    --         'TmuxNavigatePrevious',
+    --     },
+    --     keys = {
+    --         { '<c-h>',  '<cmd><C-U>TmuxNavigateLeft<cr>' },
+    --         { '<c-j>',  '<cmd><C-U>TmuxNavigateDown<cr>' },
+    --         { '<c-k>',  '<cmd><C-U>TmuxNavigateUp<cr>' },
+    --         { '<c-l>',  '<cmd><C-U>TmuxNavigateRight<cr>' },
+    --         { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
+    --     },
+    -- },
+}, {})
