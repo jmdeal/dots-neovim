@@ -322,4 +322,6 @@ require("lazy").setup({
     --         { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
     --     },
     -- },
+    -- Soft wrap at a specific column
+    'rickhowe/wrapwidth',
 }, {})

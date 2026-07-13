@@ -20,10 +20,10 @@ map('n', '<leader>/', function()
 end, { desc = '[/] Fuzzily search in current buffer' })
 
 map('n', '<leader>fb', require('telescope.builtin').buffers, { desc = '[F]ind [B]uffers' })
-map('n', '<leader>fh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
-map('n', '<leader>fr', require('telescope.builtin').live_grep, { desc = '[S]earch by [R]g' })
-map('n', '<leader>fd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
-
+map('n', '<leader>fh', require('telescope.builtin').help_tags, { desc = '[F]ind [H]elp' })
+map('n', '<leader>fr', require('telescope.builtin').live_grep, { desc = '[F]ind by [R]g' })
+map('n', '<leader>fd', require('telescope.builtin').diagnostics, { desc = '[F]ind [D]iagnostics' })
+map('n', '<leader>fd', require('telescope.builtin').marks, { desc = '[F]ind [M]arks' })
 -- Git Keymaps
 map('n', '<leader>gb', require('telescope.builtin').git_branches, { desc = '[G]it [B]ranches'})
 map('n', '<leader>gs', require('telescope.builtin').git_status, { desc = '[G]it [S]tatus'})
