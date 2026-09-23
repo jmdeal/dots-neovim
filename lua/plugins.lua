@@ -230,8 +230,11 @@ require("lazy").setup({
 
     -- Telescope
     {
+        -- v0.2.x drops the hard dependency on nvim-treesitter's removed
+        -- `parsers.ft_to_lang`/`configs` API and uses native `vim.treesitter`
+        -- for preview highlighting (required after the treesitter `main` rewrite).
         'nvim-telescope/telescope.nvim',
-        branch = '0.1.x',
+        tag = 'v0.2.2',
         dependencies = {
             'nvim-lua/plenary.nvim',
             {
@@ -245,12 +248,18 @@ require("lazy").setup({
     },
 
     -- Treesitter: Better text highlighting
+    -- NOTE: On the `main` branch rewrite. Does not support lazy-loading.
     {
         'nvim-treesitter/nvim-treesitter',
-        dependencies = {
-            'nvim-treesitter/nvim-treesitter-textobjects',
-        },
+        branch = 'main',
+        lazy = false,
         build = ':TSUpdate',
+        dependencies = {
+            {
+                'nvim-treesitter/nvim-treesitter-textobjects',
+                branch = 'main',
+            },
+        },
     },
 
     -- TODO Highlighting
